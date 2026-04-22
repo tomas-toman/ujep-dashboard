@@ -42,7 +42,7 @@ export default function sidebar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`justify-center sm:justify-normal flex py-3 px-8 rounded-lg ${isActive ? "bg-theme-cream" : "hover:bg-theme-cream"}`}
+                className={`justify-center sm:justify-normal flex py-3 px-8 ${isActive ? "bg-theme-cream" : "hover:bg-theme-cream"}`}
               >
                 <Image src={item.icon} alt={item.alt} className="mr-2" />
                 {item.name}
