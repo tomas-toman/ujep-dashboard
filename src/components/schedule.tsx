@@ -55,7 +55,7 @@ export default async function schedule() {
             <tr className="text-center whitespace-nowrap text-theme-white bg-theme-black">
               <th className="py-3 sticky left-0 z-20 bg-theme-black"></th>
               {hours.map((hour) => (
-                <th key={hour} className="py-3 px-4 text-center border-l border-theme-gray-200 first:border-none">
+                <th key={hour} className="py-3 px-4 text-center">
                   {`${hour.toString().padStart(2, '0')}:00 - ${hour.toString().padStart(2, '0')}:50`}
                 </th>
               ))}
