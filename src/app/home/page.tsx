@@ -14,7 +14,7 @@ export default function home() {
           Academic Year {academicYear} — {semester}
         </p>
         <div className="p-1 md:p-4 bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50 ">
-          <Schedule />
+          <Schedule showFilter={false} />
         </div>
       </section>
       <section className="m-8"></section>
