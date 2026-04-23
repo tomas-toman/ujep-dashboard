@@ -30,9 +30,11 @@ export default function sidebar() {
       </button>
 
       <aside className={`w-full sm:w-64 min-h-screen sticky top-0 flex flex-col bg-theme-white ${isOpen ? "translate-x-0" : "-translate-x-full"} sm:relative sm:translate-x-0`}>
-        <div className="py-4 justify-center flex">
-          <Image src={Logo} alt="Logo" className="w-44" loading="eager"/>
-        </div>
+        <a href="/">
+          <div className="py-4 justify-center flex">
+            <Image src={Logo} alt="Logo" className="w-44" loading="eager"/>
+          </div>
+        </a>
         
         <nav>
           {menuItems.map((item) => {

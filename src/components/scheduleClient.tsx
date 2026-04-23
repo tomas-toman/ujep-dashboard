@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { RozvrhovaAkce } from "./schedule";
 
 const TYP_AKCE_MAP: Record<string, string> = {
@@ -45,6 +45,24 @@ export default function scheduleClient({
     selectedSubjects.includes(`${akce.katedra}/${akce.predmet}`)
   );
 
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        el.scrollLeft += e.deltaY;
+      }
+    };
+
+    el.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => el.removeEventListener("wheel", handleWheel);
+  }, []);
+
   return (
     <div className="flex flex-col gap-6">
       {showFilter && (
@@ -64,7 +82,7 @@ export default function scheduleClient({
         </div>
       )}
 
-      <div className="rounded-xl shadow-sm bg-theme-white overflow-x-scroll">
+      <div ref={scrollContainerRef} className="rounded-xl shadow-sm bg-theme-white overflow-x-scroll">
         <table className="text-sm w-full">
           <thead className="font-medium">
             <tr className="text-center whitespace-nowrap text-theme-white bg-theme-black">
@@ -90,20 +108,33 @@ export default function scheduleClient({
                       return null; 
                     }
 
-                    const akce = filteredData.find(
+                    const akceList = filteredData.filter(
                       (a) => a.den === day && a.hodinaSkutOd?.value?.startsWith(time)
                     );
 
-                    if (akce) {
-                      const span = getDuration(akce.hodinaSkutOd?.value, akce.hodinaSkutDo?.value);
+                    if (akceList.length > 0) {
+                      const span = Math.max(...akceList.map(a => getDuration(a.hodinaSkutOd?.value, a.hodinaSkutDo?.value)));
                       skipCount = span - 1;
 
                       return (
-                        <td key={time} colSpan={span} className="min-w-35 p-1">
-                          <div className="flex flex-col h-full justify-center p-2 rounded shadow-sm bg-theme-black text-theme-white">
-                            <div className="font-bold">{akce.katedra}/{akce.predmet}</div>
-                            <div className="text-[10px] font-medium">{akce.hodinaSkutOd?.value} - {akce.hodinaSkutDo?.value}</div>
-                            <div className="text-[10px]">{akce.budova}-{akce.mistnost} | {TYP_AKCE_MAP[akce.typAkce] || akce.typAkce}</div>
+                        <td key={time} colSpan={span} className="min-w-35 p-1 align-top">
+                          <div className="flex flex-col gap-1 h-full">
+                            {akceList.map((akce, index) => {
+                              const akceSpan = getDuration(akce.hodinaSkutOd?.value, akce.hodinaSkutDo?.value);
+                              const widthPercentage = (akceSpan / span) * 100;
+
+                              return (
+                                <div 
+                                  key={`${akce.predmet}-${index}`} 
+                                  style={{ width: `${widthPercentage}%` }}
+                                  className="flex flex-col flex-1 justify-center p-2 rounded shadow-sm bg-theme-black text-theme-white whitespace-nowrap overflow-hidden"
+                                >
+                                  <div className="font-bold text-ellipsis overflow-hidden">{akce.katedra}/{akce.predmet}</div>
+                                  <div className="text-[10px] font-medium">{akce.hodinaSkutOd?.value} - {akce.hodinaSkutDo?.value}</div>
+                                  <div className="text-[10px] text-ellipsis overflow-hidden">{akce.budova}-{akce.mistnost} | {TYP_AKCE_MAP[akce.typAkce] || akce.typAkce}</div>
+                                </div>
+                              );
+                            })}
                           </div>
                         </td>
                       );
